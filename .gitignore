@@ -1,0 +1,55 @@
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+*.log
+
+# VS Code
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# Node.js (Backend & Frontend)
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# Python (AI)
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+.venv
+env/
+ENV/
+
+# YOLO / AI Specific
+ai/runs/
+ai/datasets/
+*.pt
+*.onnx
+
+# Angular (Frontend)
+frontend/dist/
+frontend/tmp/
+frontend/out-tsc/
+frontend/bazel-out
+frontend/test-main.js
+frontend/test.ts
+frontend/karma.conf.js
+.angular/
+
+# Backend Specific
+backend/dist/
+backend/coverage/
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
