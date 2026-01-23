@@ -1,0 +1,56 @@
+.upload-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.upload-box {
+  margin: 2rem 0;
+  padding: 2rem;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+}
+
+button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:disabled {
+  background: #ccc;
+}
+
+.preview-img {
+  max-width: 100%;
+  border-radius: 4px;
+  margin: 1rem 0;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  margin: 1rem 0;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.value {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.happy .value { color: green; }
+.sad .value { color: red; }
+.score { margin-top: 1rem; font-size: 1.2rem; }

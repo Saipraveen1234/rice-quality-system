@@ -1,0 +1,7 @@
+path: /Users/malleshasaipraveen/Desktop/rice-quality-system/ai/datasets/generated_train
+train: images  # train images (relative to 'path')
+val: images  # val images (relative to 'path') - using same for demo simplicity
+
+names:
+  0: Full
+  1: Broken

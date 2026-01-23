@@ -1,0 +1,43 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+ai/venv/
+*.egg-info/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Uploads (will be mounted as volume)
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Build artifacts
+dist/
+build/
+
+# Logs
+*.log
+logs/
+
+# Database
+*.sqlite
+*.db

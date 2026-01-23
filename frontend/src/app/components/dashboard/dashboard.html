@@ -1,0 +1,38 @@
+<div class="dashboard">
+    <h2>Analysis History</h2>
+
+    <div *ngIf="loading">Loading history...</div>
+
+    <table *ngIf="!loading && history.length > 0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Image</th>
+                <th>Quality (%)</th>
+                <th>Good</th>
+                <th>Broken</th>
+                <th>Total</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of history">
+                <td>{{ item.id }}</td>
+                <td>{{ item.createdAt | date:'short' }}</td>
+                <td>
+                    <a [href]="'http://localhost:3000/' + item.imageUrl" target="_blank">View</a>
+                </td>
+                <td><strong>{{ item.qualityScore }}%</strong></td>
+                <td>{{ item.goodGrains }}</td>
+                <td>{{ item.brokenGrains }}</td>
+                <td>{{ item.totalGrains }}</td>
+                <td>
+                    <span [class]="'status ' + item.status.toLowerCase()">{{ item.status }}</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div *ngIf="!loading && history.length === 0">No records found.</div>
+</div>

@@ -1,0 +1,38 @@
+<div class="upload-container">
+  <h2>Analyze Rice Quality</h2>
+  
+  <div class="upload-box">
+    <input type="file" (change)="onFileSelected($event)" accept="image/*" />
+    <button (click)="onUpload()" [disabled]="!selectedFile || isUploading">
+      {{ isUploading ? 'Analyzing...' : 'Upload & Analyze' }}
+    </button>
+  </div>
+
+  <div *ngIf="message" class="message" [class.error]="message.includes('failed')">
+    {{ message }}
+  </div>
+
+  <div *ngIf="result" class="result-card">
+    <h3>Results</h3>
+    <img [src]="'http://localhost:3000/' + result.imageUrl" alt="Analyzed Image" class="preview-img">
+    
+    <div class="stats">
+      <div class="stat-item happy">
+        <span class="label">Good Grains</span>
+        <span class="value">{{ result.goodGrains }}</span>
+      </div>
+      <div class="stat-item sad">
+        <span class="label">Broken Grains</span>
+        <span class="value">{{ result.brokenGrains }}</span>
+      </div>
+      <div class="stat-item total">
+        <span class="label">Total</span>
+        <span class="value">{{ result.totalGrains }}</span>
+      </div>
+    </div>
+
+    <div class="score">
+      Quality Score: <strong>{{ result.qualityScore }}%</strong>
+    </div>
+  </div>
+</div>
