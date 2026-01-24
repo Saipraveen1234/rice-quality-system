@@ -7,10 +7,10 @@ from tqdm import tqdm
 
 # Configuration
 SOURCE_DIR = "datasets/source_grains"
-OUTPUT_DIR = "datasets/generated_train"
+OUTPUT_DIR = "datasets/generated_train" # Overwrite the existing dataset folder for next training
 IMG_SIZE = 640
 NUM_IMAGES = 200  # Generate 200 synthetic images
-GRAINS_PER_IMAGE = 15
+GRAINS_PER_IMAGE = 50 # Increased density (was 15)
 
 # Classes
 CLASS_FULL = 0
@@ -50,6 +50,14 @@ def generate_scene(image_id, source_grains):
     canvas = np.zeros((IMG_SIZE, IMG_SIZE, 3), dtype=np.uint8)
     labels = []
 
+    # Cluster centers (create 3-5 piles of rice)
+    num_clusters = random.randint(3, 5)
+    clusters = []
+    for _ in range(num_clusters):
+        cx = random.randint(100, IMG_SIZE-100)
+        cy = random.randint(100, IMG_SIZE-100)
+        clusters.append((cx, cy))
+
     for _ in range(GRAINS_PER_IMAGE):
         # Pick a random source grain
         src_path = random.choice(source_grains)
@@ -59,7 +67,7 @@ def generate_scene(image_id, source_grains):
             continue
 
         # Decide if Full or Broken
-        is_broken = random.random() < 0.5 # 50% chance of being broken
+        is_broken = random.random() < 0.5 
         class_id = CLASS_BROKEN if is_broken else CLASS_FULL
 
         if is_broken:
@@ -71,25 +79,28 @@ def generate_scene(image_id, source_grains):
         angle = random.randint(0, 360)
         M = cv2.getRotationMatrix2D((grain_img.shape[1]//2, grain_img.shape[0]//2), angle, 1.0)
         grain_img = cv2.warpAffine(grain_img, M, (grain_img.shape[1], grain_img.shape[0]))
-
-        # Check for transparency/black background in the rotated image? 
-        # Actually simplest is just to copy it over. 
-        # Using a simple mask for non-black pixels to overlay.
         
-        # Random position
         h, w = grain_img.shape[:2]
-        
-        # Ensure it fits
         if h >= IMG_SIZE or w >= IMG_SIZE: continue
 
-        x_pos = random.randint(0, IMG_SIZE - w - 1)
-        y_pos = random.randint(0, IMG_SIZE - h - 1)
+        # Position logic: 80% chance to be near a cluster center, 20% random
+        if random.random() < 0.8:
+            # Pick a random cluster
+            cx, cy = random.choice(clusters)
+            # Offset from center (Gaussian dispersion) - make tightly packed
+            offset_x = int(random.gauss(0, 40))
+            offset_y = int(random.gauss(0, 40))
+            x_pos = max(0, min(IMG_SIZE - w, cx + offset_x - w//2))
+            y_pos = max(0, min(IMG_SIZE - h, cy + offset_y - h//2))
+        else:
+            # Random position (scattered grains)
+            x_pos = random.randint(0, IMG_SIZE - w - 1)
+            y_pos = random.randint(0, IMG_SIZE - h - 1)
 
         # Region of Interest
         roi = canvas[y_pos:y_pos+h, x_pos:x_pos+w]
 
-        # Create mask (assuming grain is on black/dark background in source or simply non-black pixels)
-        # The Kaggle dataset usually has black background.
+        # Create mask
         gray = cv2.cvtColor(grain_img, cv2.COLOR_BGR2GRAY)
         _, mask = cv2.threshold(gray, 10, 255, cv2.THRESH_BINARY)
         mask_inv = cv2.bitwise_not(mask)
@@ -103,8 +114,7 @@ def generate_scene(image_id, source_grains):
         dst = cv2.add(img_bg, img_fg)
         canvas[y_pos:y_pos+h, x_pos:x_pos+w] = dst
 
-        # Add label (YOLO format: class x_center y_center width height)
-        # Normalized to 0-1
+        # Add label
         x_center = (x_pos + w/2) / IMG_SIZE
         y_center = (y_pos + h/2) / IMG_SIZE
         norm_w = w / IMG_SIZE
@@ -113,7 +123,7 @@ def generate_scene(image_id, source_grains):
         labels.append(f"{class_id} {x_center} {y_center} {norm_w} {norm_h}")
 
     # Save Image
-    params = [cv2.IMWRITE_JPEG_QUALITY, 95] # Save as JPG to save space if needed
+    params = [cv2.IMWRITE_JPEG_QUALITY, 95]
     cv2.imwrite(f"{OUTPUT_DIR}/images/{image_id}.jpg", canvas, params)
 
     # Save Label
@@ -126,7 +136,7 @@ if __name__ == "__main__":
     if not source_grains:
         print("No source images found!")
     else:
-        print("Generating synthetic data...")
+        print("Generating DENSE CLUSTERED synthetic data...")
         for i in tqdm(range(NUM_IMAGES)):
-            generate_scene(f"train_{i}", source_grains)
+            generate_scene(f"train_dense_{i}", source_grains)
         print("Done!")

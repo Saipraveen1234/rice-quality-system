@@ -5,8 +5,10 @@ import contextlib
 from ultralytics import YOLO
 
 # Path to the trained model
-# Note: 'train2' was observed in the training logs. Adapting if needed.
-MODEL_PATH = '/Users/malleshasaipraveen/Desktop/rice-quality-system/runs/detect/train2/weights/best.pt'
+# Support both local development and Docker environments
+script_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(script_dir)  # Go up one level from ai/ to project root
+MODEL_PATH = os.path.join(project_root, 'runs/detect/rice_quality_improved/weights/best.pt')
 
 def analyze_image(image_path):
     try:
@@ -16,10 +18,8 @@ def analyze_image(image_path):
             model = YOLO(MODEL_PATH)
             
             # Run inference
-            # Using conf=0.015 and iou=0.3 to balance detection vs false positives
-            # Lower IoU makes NMS more aggressive at merging overlapping boxes
-            # TODO: Retrain model for better confidence, then increase threshold back to 0.25
-            results = model.predict(image_path, conf=0.015, iou=0.3, save=True, project='/Users/malleshasaipraveen/Desktop/rice-quality-system/runs/detect', name='inference', exist_ok=True, verbose=False)
+            # Using standard confidence threshold (0.25) now that model is better trained
+            results = model.predict(image_path, conf=0.25, save=True, project='/Users/malleshasaipraveen/Desktop/rice-quality-system/runs/detect', name='inference', exist_ok=True, verbose=False)
         
         result = results[0]
         
