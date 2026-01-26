@@ -1,11 +1,20 @@
 <div class="upload-container">
   <h2>Analyze Rice Quality</h2>
-  
+
   <div class="upload-box">
     <input type="file" (change)="onFileSelected($event)" accept="image/*" />
     <button (click)="onUpload()" [disabled]="!selectedFile || isUploading">
       {{ isUploading ? 'Analyzing...' : 'Upload & Analyze' }}
     </button>
+  </div>
+
+  <div class="info-banner">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink: 0;">
+      <circle cx="8" cy="8" r="7" stroke="#0066cc" stroke-width="2" fill="none" />
+      <path d="M8 4v4M8 10h.01" stroke="#0066cc" stroke-width="2" stroke-linecap="round" />
+    </svg>
+    <span><strong>Tip:</strong> For best results, use images with dark or black backgrounds. The AI model is optimized
+      for rice grains on dark surfaces.</span>
   </div>
 
   <div *ngIf="message" class="message" [class.error]="message.includes('failed')">
@@ -15,7 +24,7 @@
   <div *ngIf="result" class="result-card">
     <h3>Results</h3>
     <img [src]="'http://localhost:3000/' + result.imageUrl" alt="Analyzed Image" class="preview-img">
-    
+
     <div class="stats">
       <div class="stat-item happy">
         <span class="label">Good Grains</span>

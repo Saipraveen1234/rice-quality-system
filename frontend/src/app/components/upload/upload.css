@@ -4,7 +4,7 @@
   padding: 2rem;
   border-radius: 8px;
   background: white;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 
@@ -14,6 +14,26 @@
   border: 2px dashed #ccc;
   border-radius: 8px;
 }
+
+.info-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  margin: 1rem 0;
+  background: #e6f2ff;
+  border-left: 4px solid #0066cc;
+  border-radius: 4px;
+  text-align: left;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #003d7a;
+}
+
+.info-banner svg {
+  margin-top: 2px;
+}
+
 
 button {
   margin-top: 1rem;
@@ -51,6 +71,15 @@ button:disabled {
   font-weight: bold;
 }
 
-.happy .value { color: green; }
-.sad .value { color: red; }
-.score { margin-top: 1rem; font-size: 1.2rem; }
+.happy .value {
+  color: green;
+}
+
+.sad .value {
+  color: red;
+}
+
+.score {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+}

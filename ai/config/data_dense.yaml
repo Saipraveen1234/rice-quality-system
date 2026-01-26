@@ -1,0 +1,7 @@
+path: /Users/malleshasaipraveen/Desktop/rice-quality-system/ai/datasets/generated_train
+train: images
+val: images  # Using same images for validation (small dataset)
+
+names:
+  0: Full
+  1: Broken

@@ -2,24 +2,75 @@ import sys
 import json
 import os
 import contextlib
+import cv2
+import numpy as np
 from ultralytics import YOLO
 
 # Path to the trained model
 # Support both local development and Docker environments
 script_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(script_dir)  # Go up one level from ai/ to project root
-MODEL_PATH = os.path.join(project_root, 'runs/detect/rice_quality_improved/weights/best.pt')
+MODEL_PATH = os.path.join(script_dir, 'runs/detect/rice_cluster_v2/weights/best.pt')
+
+def preprocess_image(image_path):
+    """
+    Preprocess image to handle transparent backgrounds.
+    Converts them to black to match training data.
+    """
+    try:
+        # Read image with alpha channel support
+        img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
+        
+        if img is None:
+            return image_path
+        
+        # Handle different image formats
+        if len(img.shape) == 2:
+            # Grayscale image, convert to BGR
+            img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+        elif len(img.shape) == 3 and img.shape[2] == 4:
+            # Image has alpha channel (transparency)
+            # Simple approach: replace transparent areas with black
+            rgb = img[:, :, :3]
+            alpha = img[:, :, 3]
+            
+            # Create black background
+            black_bg = np.zeros_like(rgb)
+            
+            # Blend: where alpha is 255 (opaque), use original; where 0 (transparent), use black
+            alpha_3ch = np.stack([alpha, alpha, alpha], axis=2) / 255.0
+            img = (rgb * alpha_3ch + black_bg * (1 - alpha_3ch)).astype(np.uint8)
+        elif len(img.shape) == 3 and img.shape[2] == 3:
+            # Standard RGB/BGR image - use as is
+            pass
+        else:
+            return image_path
+        
+        # Save preprocessed image
+        preprocessed_path = image_path.rsplit('.', 1)[0] + '_preprocessed.jpg'
+        cv2.imwrite(preprocessed_path, img)
+        
+        return preprocessed_path
+        
+    except Exception as e:
+        print(f"Preprocessing error: {e}", file=sys.stderr)
+        return image_path
+
+
 
 def analyze_image(image_path):
     try:
+        # Preprocess image to handle transparent/white backgrounds
+        processed_image_path = preprocess_image(image_path)
+        
         # Load the model
         # Redirect stdout/stderr to suppress "Results saved to..." messages
         with open(os.devnull, 'w') as f, contextlib.redirect_stdout(f), contextlib.redirect_stderr(f):
             model = YOLO(MODEL_PATH)
             
-            # Run inference
+            # Run inference on preprocessed image
             # Using standard confidence threshold (0.25) now that model is better trained
-            results = model.predict(image_path, conf=0.25, save=True, project='/Users/malleshasaipraveen/Desktop/rice-quality-system/runs/detect', name='inference', exist_ok=True, verbose=False)
+            results = model.predict(processed_image_path, conf=0.25, save=True, project='/Users/malleshasaipraveen/Desktop/rice-quality-system/runs/detect', name='inference', exist_ok=True, verbose=False)
         
         result = results[0]
         
