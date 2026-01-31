@@ -96,6 +96,13 @@ exports.analyzeImage = async (req, res) => {
                     throw new Error('No valid JSON found in Python output');
                 }
 
+                if (result.status === 'error') {
+                    analysis.status = 'FAILED';
+                    analysis.rawResult = result;
+                    await analysis.save();
+                    return res.status(400).json({ error: result.error });
+                }
+
                 // 3. Update Record
                 analysis.status = 'COMPLETED';
                 analysis.totalGrains = result.total_grains;

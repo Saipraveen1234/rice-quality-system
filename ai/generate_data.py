@@ -45,6 +45,51 @@ def create_broken_grain(img):
         start_x = 0 if random.choice([True, False]) else w - new_w
         return img[:, start_x:start_x+new_w]
 
+def add_shadow(canvas, mask, x, y, w, h):
+    """
+    Adds a simple drop shadow to the canvas based on the grain mask.
+    """
+    shadow_offset_x = random.randint(2, 5)
+    shadow_offset_y = random.randint(2, 5)
+    
+    # Create shadow mask (dilated slightly to look softer)
+    shadow_mask = mask.copy()
+    shadow_mask = cv2.GaussianBlur(shadow_mask, (5, 5), 0)
+    
+    # Shadow intensity (0.4 opacity)
+    shadow_opacity = 0.4
+    
+    # Calculate shadow coordinates
+    sy1 = min(canvas.shape[0], max(0, y + shadow_offset_y))
+    sy2 = min(canvas.shape[0], max(0, y + h + shadow_offset_y))
+    sx1 = min(canvas.shape[1], max(0, x + shadow_offset_x))
+    sx2 = min(canvas.shape[1], max(0, x + w + shadow_offset_x))
+    
+    # Calculate source mask coordinates (handling boundary clipping)
+    my1 = sy1 - (y + shadow_offset_y)
+    my2 = my1 + (sy2 - sy1)
+    mx1 = sx1 - (x + shadow_offset_x)
+    mx2 = mx1 + (sx2 - sx1)
+    
+    if (sy2 <= sy1) or (sx2 <= sx1): return canvas
+    
+    # Apply shadow
+    roi_shadow = canvas[sy1:sy2, sx1:sx2]
+    shadow_area = shadow_mask[my1:my2, mx1:mx2]
+    
+    # Darken the shadow area
+    # Convert shadow_area to float 0-1
+    shadow_factor = (shadow_area.astype(float) / 255.0) * shadow_opacity
+    
+    # Broadcast to 3 channels
+    shadow_factor = np.stack([shadow_factor, shadow_factor, shadow_factor], axis=2)
+    
+    # Darken: result = original * (1 - shadow_factor)
+    roi_shadow = roi_shadow * (1.0 - shadow_factor)
+    canvas[sy1:sy2, sx1:sx2] = roi_shadow.astype(np.uint8)
+    
+    return canvas
+
 def generate_scene(image_id, source_grains):
     # Create black canvas
     canvas = np.zeros((IMG_SIZE, IMG_SIZE, 3), dtype=np.uint8)
@@ -80,6 +125,9 @@ def generate_scene(image_id, source_grains):
         M = cv2.getRotationMatrix2D((grain_img.shape[1]//2, grain_img.shape[0]//2), angle, 1.0)
         grain_img = cv2.warpAffine(grain_img, M, (grain_img.shape[1], grain_img.shape[0]))
         
+        # Slight blur to blend edges
+        grain_img = cv2.GaussianBlur(grain_img, (3, 3), 0)
+
         h, w = grain_img.shape[:2]
         if h >= IMG_SIZE or w >= IMG_SIZE: continue
 
@@ -97,12 +145,15 @@ def generate_scene(image_id, source_grains):
             x_pos = random.randint(0, IMG_SIZE - w - 1)
             y_pos = random.randint(0, IMG_SIZE - h - 1)
 
-        # Region of Interest
-        roi = canvas[y_pos:y_pos+h, x_pos:x_pos+w]
-
         # Create mask
         gray = cv2.cvtColor(grain_img, cv2.COLOR_BGR2GRAY)
         _, mask = cv2.threshold(gray, 10, 255, cv2.THRESH_BINARY)
+        
+        # Add shadow first
+        canvas = add_shadow(canvas, mask, x_pos, y_pos, w, h)
+
+        # Region of Interest
+        roi = canvas[y_pos:y_pos+h, x_pos:x_pos+w]
         mask_inv = cv2.bitwise_not(mask)
 
         # Black-out area of grain in ROI
@@ -136,7 +187,7 @@ if __name__ == "__main__":
     if not source_grains:
         print("No source images found!")
     else:
-        print("Generating DENSE CLUSTERED synthetic data...")
+        print("Generating DENSE CLUSTERED synthetic data WITH SHADOWS...")
         for i in tqdm(range(NUM_IMAGES)):
             generate_scene(f"train_dense_{i}", source_grains)
         print("Done!")

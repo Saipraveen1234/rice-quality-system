@@ -58,8 +58,38 @@ def preprocess_image(image_path):
 
 
 
+def validate_image(image_path):
+    try:
+        img = cv2.imread(image_path)
+        if img is None:
+            return False, "Could not read image file"
+
+        # Check average brightness
+        # Rice grains on black background should result in low average brightness
+        # Random screenshots usually have high brightness (white/light background)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        mean_brightness = np.mean(gray)
+        
+        # Threshold: 100 out of 255. 
+        # Screenshots are typically > 150-200. Dark background images are < 50.
+        if mean_brightness > 100:
+            return False, "Invalid image: Image is too bright. Please use an image with a dark background."
+            
+        return True, None
+    except Exception as e:
+        return False, f"Validation error: {str(e)}"
+
 def analyze_image(image_path):
     try:
+        # Validate image first
+        is_valid, validation_error = validate_image(image_path)
+        if not is_valid:
+            print(json.dumps({
+                "status": "error",
+                "error": validation_error
+            }))
+            return
+
         # Preprocess image to handle transparent/white backgrounds
         processed_image_path = preprocess_image(image_path)
         
