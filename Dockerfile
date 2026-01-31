@@ -24,6 +24,7 @@ WORKDIR /app
 COPY ai/requirements.txt ./ai/
 RUN python3 -m venv ai/venv && \
     ./ai/venv/bin/pip install --upgrade pip && \
+    ./ai/venv/bin/pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu && \
     ./ai/venv/bin/pip install -r ai/requirements.txt
 
 # Copy the rest of the application
