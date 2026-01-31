@@ -28,10 +28,11 @@ env/
 ENV/
 
 # YOLO / AI Specific
-ai/runs/
+# ai/runs/ 
 ai/datasets/
 *.pt
 *.onnx
+!ai/runs/detect/rice_cluster_v2/weights/best.pt
 
 # Angular (Frontend)
 frontend/dist/
