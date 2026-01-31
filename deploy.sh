@@ -6,9 +6,11 @@ cd ~/rice-quality-system
 
 echo "Starting Deployment..."
 
-# Pull the latest changes from the repository
-echo "Pulling latest changes from git..."
-git pull origin main
+# Force fresh pull
+echo "Fetching latest changes..."
+git fetch --all
+git reset --hard origin/main
+git clean -fd
 
 # Rebuild and restart the containers
 echo "Rebuilding and restarting containers..."

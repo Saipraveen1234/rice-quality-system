@@ -100,7 +100,9 @@ def analyze_image(image_path):
             
             # Run inference on preprocessed image
             # Using standard confidence threshold (0.25) now that model is better trained
-            results = model.predict(processed_image_path, conf=0.25, save=True, project='/Users/malleshasaipraveen/Desktop/rice-quality-system/runs/detect', name='inference', exist_ok=True, verbose=False)
+            # Save to project_root/runs/detect inside the container
+            save_dir = os.path.join(project_root, 'runs/detect')
+            results = model.predict(processed_image_path, conf=0.25, save=True, project=save_dir, name='inference', exist_ok=True, verbose=False)
         
         result = results[0]
         
