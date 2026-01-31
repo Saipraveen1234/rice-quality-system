@@ -23,7 +23,7 @@
 
   <div *ngIf="result" class="result-card">
     <h3>Results</h3>
-    <img [src]="'http://localhost:3000/' + result.imageUrl" alt="Analyzed Image" class="preview-img">
+    <img [src]="result.imageUrl" alt="Analyzed Image" class="preview-img">
 
     <div class="stats">
       <div class="stat-item happy">

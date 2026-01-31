@@ -25,7 +25,8 @@
                 <h3>Avg. Quality Score</h3>
                 <p class="stat-value">{{ averageQuality }}%</p>
                 <div class="progress-mini">
-                    <div [style.width.%]="averageQuality" [class]="'progress-bar ' + (averageQuality > 70 ? 'success' : 'warning')"></div>
+                    <div [style.width.%]="averageQuality"
+                        [class]="'progress-bar ' + (averageQuality > 70 ? 'success' : 'warning')"></div>
                 </div>
             </div>
         </div>
@@ -83,14 +84,14 @@
                             </div>
                         </td>
                         <td>
-                            <a [href]="'http://localhost:3000/' + item.imageUrl" target="_blank" class="view-image-link">
+                            <a [href]="item.imageUrl" target="_blank" class="view-image-link">
                                 View Image <span class="arrow">→</span>
                             </a>
                         </td>
                         <td>
                             <div class="quality-cell">
-                                <div class="quality-ring" [style.--p]="item.qualityScore" 
-                                     [class]="item.qualityScore > 70 ? 'good' : (item.qualityScore > 40 ? 'average' : 'poor')">
+                                <div class="quality-ring" [style.--p]="item.qualityScore"
+                                    [class]="item.qualityScore > 70 ? 'good' : (item.qualityScore > 40 ? 'average' : 'poor')">
                                     {{ item.qualityScore }}%
                                 </div>
                             </div>
