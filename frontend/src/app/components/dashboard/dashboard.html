@@ -1,54 +1,120 @@
-<div class="dashboard">
-    <h2>Analysis History</h2>
-
-    <div *ngIf="loading" class="loading-state">
-        <p>Loading history...</p>
+<div class="dashboard-container">
+    <div class="header-section">
+        <h2>Dashboard Overview</h2>
+        <p class="subtitle">Monitor your rice quality analysis history and performance metrics.</p>
     </div>
 
-    <table *ngIf="!loading && history.length > 0">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Date</th>
-                <th>Image</th>
-                <th>Quality Score</th>
-                <th>Good Grains</th>
-                <th>Broken Grains</th>
-                <th>Total</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let item of history">
-                <td>#{{ item.id }}</td>
-                <td>{{ item.createdAt | date:'mediumDate' }} <span style="color: #999; font-size: 0.85em;">{{
-                        item.createdAt | date:'shortTime' }}</span></td>
-                <td>
-                    <a [href]="'http://localhost:3000/' + item.imageUrl" target="_blank" title="View Image">
-                        View Image
-                    </a>
-                </td>
-                <td>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <div style="background: #eee; height: 6px; width: 60px; border-radius: 3px; overflow: hidden;">
-                            <div [style.width.%]="item.qualityScore"
-                                [style.background-color]="item.qualityScore > 70 ? 'var(--success-color)' : (item.qualityScore > 40 ? 'var(--warning-color)' : 'var(--danger-color)')"
-                                style="height: 100%;"></div>
-                        </div>
-                        <strong>{{ item.qualityScore }}%</strong>
-                    </div>
-                </td>
-                <td>{{ item.goodGrains }}</td>
-                <td>{{ item.brokenGrains }}</td>
-                <td>{{ item.totalGrains }}</td>
-                <td>
-                    <span [class]="'status ' + item.status.toLowerCase()">{{ item.status }}</span>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <!-- Stats Overview -->
+    <div class="stats-grid" *ngIf="!loading">
+        <div class="stat-card">
+            <div class="stat-icon inspection-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Total Inspections</h3>
+                <p class="stat-value">{{ totalInspections }}</p>
+                <p class="stat-label">All time</p>
+            </div>
+        </div>
 
+        <div class="stat-card">
+            <div class="stat-icon quality-icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Avg. Quality Score</h3>
+                <p class="stat-value">{{ averageQuality }}%</p>
+                <div class="progress-mini">
+                    <div [style.width.%]="averageQuality" [class]="'progress-bar ' + (averageQuality > 70 ? 'success' : 'warning')"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon broken-icon">
+                <i class="fas fa-heart-broken"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Avg. Broken Grains</h3>
+                <p class="stat-value">{{ averageBrokenGrains }}</p>
+                <p class="stat-label">Per sample</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading your dashboard...</p>
+    </div>
+
+    <!-- Empty State -->
     <div *ngIf="!loading && history.length === 0" class="empty-state">
-        <p>No analysis records found. <a routerLink="/">Analyze your first sample</a>.</p>
+        <div class="empty-icon">📊</div>
+        <h3>No Analysis Records Yet</h3>
+        <p>Start by analyzing your first rice sample to see insights here.</p>
+        <a routerLink="/" class="btn-primary">Analyze Sample</a>
+    </div>
+
+    <!-- History Table -->
+    <div class="table-container" *ngIf="!loading && history.length > 0">
+        <div class="table-header">
+            <h3>Recent Analysis</h3>
+        </div>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date & Time</th>
+                        <th>Image</th>
+                        <th>Quality</th>
+                        <th>Composition</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of history">
+                        <td class="id-cell">#{{ item.id }}</td>
+                        <td>
+                            <div class="date-cell">
+                                <span class="date">{{ item.createdAt | date:'mediumDate' }}</span>
+                                <span class="time">{{ item.createdAt | date:'shortTime' }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <a [href]="'http://localhost:3000/' + item.imageUrl" target="_blank" class="view-image-link">
+                                View Image <span class="arrow">→</span>
+                            </a>
+                        </td>
+                        <td>
+                            <div class="quality-cell">
+                                <div class="quality-ring" [style.--p]="item.qualityScore" 
+                                     [class]="item.qualityScore > 70 ? 'good' : (item.qualityScore > 40 ? 'average' : 'poor')">
+                                    {{ item.qualityScore }}%
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="composition-cell">
+                                <div class="grain-stat good">
+                                    <span class="label">Good</span>
+                                    <span class="value">{{ item.goodGrains }}</span>
+                                </div>
+                                <div class="grain-stat broken">
+                                    <span class="label">Broken</span>
+                                    <span class="value">{{ item.brokenGrains }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span [class]="'status-badge ' + item.status.toLowerCase()">
+                                {{ item.status }}
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
