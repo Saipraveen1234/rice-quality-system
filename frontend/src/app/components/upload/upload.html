@@ -1,10 +1,58 @@
 <div class="upload-container">
   <h2>Analyze Rice Quality</h2>
 
-  <div class="upload-box">
-    <input type="file" (change)="onFileSelected($event)" accept="image/*" />
-    <button (click)="onUpload()" [disabled]="!selectedFile || isUploading">
-      {{ isUploading ? 'Analyzing...' : 'Upload & Analyze' }}
+  <div class="upload-options">
+    <!-- File Upload Option -->
+    <div class="option-card upload-card" (click)="fileInput.click()">
+      <div class="icon-wrapper">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="17 8 12 3 7 8" />
+          <line x1="12" y1="3" x2="12" y2="15" />
+        </svg>
+      </div>
+      <h3>Upload Image</h3>
+      <p class="subtext">Select from your device</p>
+      <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*" class="file-input-hidden" />
+      <button class="action-btn secondary">Choose File</button>
+    </div>
+
+    <div class="divider">
+      <span>OR</span>
+    </div>
+
+    <!-- Camera Option -->
+    <div class="option-card camera-card" [class.active]="showCamera" (click)="!showCamera && toggleCamera()">
+      <div class="icon-wrapper">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+          <circle cx="12" cy="13" r="4" />
+        </svg>
+      </div>
+      <h3>Take Photo</h3>
+      <p class="subtext">Use your camera</p>
+      <button (click)="toggleCamera(); $event.stopPropagation()" class="action-btn primary" [class.close]="showCamera">
+        {{ showCamera ? 'Close Camera' : 'Open Camera' }}
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="cameraError" class="error-message">
+    {{ cameraError }}
+  </div>
+
+  <div class="camera-container" *ngIf="showCamera">
+    <video #videoElement autoplay playsinline></video>
+    <canvas #canvasElement style="display: none;"></canvas>
+    <div class="camera-controls">
+      <button (click)="capturePhoto()" class="capture-btn">Capture Photo</button>
+    </div>
+  </div>
+
+  <div *ngIf="selectedFile" class="selected-file-preview">
+    <p>Selected: {{ selectedFile.name }}</p>
+    <button (click)="onUpload()" [disabled]="isUploading" class="analyze-btn">
+      {{ isUploading ? 'Analyzing...' : 'Analyze Image' }}
     </button>
   </div>
 
