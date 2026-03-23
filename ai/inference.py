@@ -10,7 +10,7 @@ from ultralytics import YOLO
 # Support both local development and Docker environments
 script_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(script_dir)  # Go up one level from ai/ to project root
-MODEL_PATH = os.path.join(script_dir, 'runs/detect/rice_cluster_v2/weights/best.pt')
+MODEL_PATH = os.path.join(script_dir, 'runs/detect/rice_quality_v3/weights/best.pt')
 
 def preprocess_image(image_path):
     """

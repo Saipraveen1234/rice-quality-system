@@ -39,6 +39,7 @@ ai/datasets/*.zip
 *.pt
 *.onnx
 !ai/runs/detect/rice_cluster_v2/weights/best.pt
+!ai/runs/detect/rice_quality_v3/weights/best.pt
 
 # Angular (Frontend)
 frontend/dist/
