@@ -99,10 +99,10 @@ def analyze_image(image_path):
             model = YOLO(MODEL_PATH)
             
             # Run inference on preprocessed image
-            # Using standard confidence threshold (0.25) now that model is better trained
+            # Using higher confidence threshold (0.35) for cleaner, more confident detections
             # Save to project_root/runs/detect inside the container
             save_dir = os.path.join(project_root, 'runs/detect')
-            results = model.predict(processed_image_path, conf=0.25, save=True, project=save_dir, name='inference', exist_ok=True, verbose=False)
+            results = model.predict(processed_image_path, conf=0.35, save=True, project=save_dir, name='inference', exist_ok=True, verbose=False)
         
         result = results[0]
         

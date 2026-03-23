@@ -1,0 +1,8 @@
+path: /Users/malleshasaipraveen/Desktop/rice-quality-system/ai/datasets/merged_dataset
+train: train/images
+val: valid/images
+
+nc: 2
+names:
+  0: Full
+  1: Broken

@@ -28,8 +28,14 @@ env/
 ENV/
 
 # YOLO / AI Specific
-# ai/runs/ 
-ai/datasets/
+# ai/runs/
+ai/datasets/generated_train/
+ai/datasets/source_grains/
+ai/datasets/new_batch_2024/
+ai/datasets/Counting Rice Grains.v9i.yolov8/
+ai/datasets/Grain Analysis.v4-project.yolov8/
+ai/datasets/Rice-Quality 3.v4i.yolov8/
+ai/datasets/*.zip
 *.pt
 *.onnx
 !ai/runs/detect/rice_cluster_v2/weights/best.pt
