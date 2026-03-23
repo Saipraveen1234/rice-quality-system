@@ -1,9 +1,26 @@
 from ultralytics import YOLO
 import os
 
+def fix_data_yaml(base_dir):
+    """Rewrite data.yaml with the correct absolute path for the current machine."""
+    dataset_dir = os.path.join(base_dir, 'datasets', 'merged_dataset')
+    data_yaml = os.path.join(dataset_dir, 'data.yaml')
+    content = f"""path: {dataset_dir}
+train: train/images
+val: valid/images
+
+nc: 2
+names:
+  0: Full
+  1: Broken
+"""
+    with open(data_yaml, 'w') as f:
+        f.write(content)
+    return data_yaml
+
 def train():
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    data_yaml = os.path.join(base_dir, 'datasets', 'merged_dataset', 'data.yaml')
+    data_yaml = fix_data_yaml(base_dir)
 
     print("=" * 60)
     print("RICE QUALITY TRAINING - V3 (Merged Dataset)")
